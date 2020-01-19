@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="600.0" maxWidth="540.0" minHeight="600.0" minWidth="540.0" prefHeight="600.0" prefWidth="540.0" stylesheets="@SettingsForm.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.UtilitiesForms.SettingsForm.SettingsFormController">
+   <children>
+      <TabPane fx:id="tabPane" prefHeight="530.0" prefWidth="351.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+          <Tab text="Connection à la DB">
+            <content>
+              <AnchorPane fx:id="tabDB" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextField fx:id="textFieldHost" layoutX="196.0" layoutY="79.0" AnchorPane.bottomAnchor="417.0" AnchorPane.leftAnchor="196.0" />
+                        <TextField fx:id="textFieldSocket" layoutX="196.0" layoutY="119.0" AnchorPane.bottomAnchor="377.0" AnchorPane.leftAnchor="196.0" />
+                        <TextField fx:id="textFieldLogin" layoutX="196.0" layoutY="159.0" AnchorPane.bottomAnchor="337.0" AnchorPane.leftAnchor="196.0" />
+                        <TextField fx:id="textFieldDataBase" layoutX="196.0" layoutY="239.0" AnchorPane.bottomAnchor="257.0" AnchorPane.leftAnchor="196.0" />
+                        <PasswordField fx:id="passwordField" layoutX="196.0" layoutY="199.0" AnchorPane.bottomAnchor="297.0" AnchorPane.leftAnchor="196.0" />
+                        <Label layoutX="33.0" layoutY="83.0" text="Host :" AnchorPane.leftAnchor="110.0" />
+                        <Label layoutX="27.0" layoutY="123.0" text="Socket :" AnchorPane.leftAnchor="110.0" />
+                        <Label layoutX="30.0" layoutY="163.0" text="Login :" AnchorPane.leftAnchor="110.0" />
+                        <Label layoutX="30.0" layoutY="203.0" text="Password :" AnchorPane.leftAnchor="110.0" />
+                        <Label layoutX="108.0" layoutY="244.0" text="DataBase :" AnchorPane.leftAnchor="110.0" />
+                        <Button fx:id="buttonTest" layoutX="209.0" layoutY="465.0" mnemonicParsing="false" text="Tester la connection" AnchorPane.bottomAnchor="14.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Exports">
+            <content>
+              <AnchorPane fx:id="tabExport" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label prefHeight="25.0" prefWidth="138.0" text="Fichier de convocation :" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="40.0" />
+                        <TextField fx:id="textFieldExportDirectory" layoutX="37.0" layoutY="219.0" prefHeight="25.0" prefWidth="211.0" AnchorPane.leftAnchor="37.0" />
+                        <Button fx:id="dirSelectButton" layoutX="248.0" layoutY="219.0" mnemonicParsing="false" styleClass="fileButton" text="Sélectionner" AnchorPane.leftAnchor="248.0" />
+                        <Label layoutX="37.0" layoutY="181.0" prefHeight="25.0" prefWidth="254.0" text="Répertoire d'exportation par défaut:" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="181.0" />
+                        <TextField fx:id="textFieldConvocationFileName" layoutX="183.0" layoutY="40.0" prefHeight="25.0" prefWidth="211.0" AnchorPane.leftAnchor="183.0" />
+                        <Button fx:id="fileSelectButton" layoutX="393.0" layoutY="40.0" mnemonicParsing="false" styleClass="fileButton" text="Sélectionner" AnchorPane.leftAnchor="393.0" />
+                        <Label layoutX="37.0" layoutY="152.0" text="Délai entre les convoqués:" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="152.0" />
+                        <Label layoutX="277.0" layoutY="152.0" text="minutes" AnchorPane.leftAnchor="277.0" />
+                        <Label layoutX="37.0" layoutY="112.0" text="Heure de la première convocation :" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="112.0" />
+                        <CheckBox fx:id="checkBoxDefaultConvocation" layoutX="38.0" layoutY="82.0" mnemonicParsing="false" text="Utiliser un fichier de convocation générique" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+      <Button fx:id="buttonSave" mnemonicParsing="false" text="Sauvegarder" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="30.0" />
+      <Button fx:id="buttonCancel" mnemonicParsing="false" text="Annuler" AnchorPane.bottomAnchor="18.0" AnchorPane.rightAnchor="23.0" />
+   </children>
+</AnchorPane>

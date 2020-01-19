@@ -1,0 +1,26 @@
+.name{
+    -fx-font-weight: bold;
+    -fx-underline: true;
+}
+
+.firstName{
+    -fx-font-weight: bold;
+}
+
+.dateOfBirth{
+     -fx-alignment: BASELINE_CENTER;
+}
+
+.exportButton{
+    -fx-background-color:transparent; -fx-background-size:0;
+    -fx-padding: 0 0 0 10;
+}
+
+.exportButton:hover{
+    -fx-scale-y: 1.1;
+    -fx-scale-x: 1.1;
+}
+
+.toolBarTooltips{
+    -fx-font-size: 12px;
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.ExportersForms.ExcelExportFormForNumberSearch.ExcelExportFormForNumberSearchController">
+   <children>
+      <CheckBox fx:id="numeroCB" layoutX="34.0" layoutY="54.0" mnemonicParsing="false" text="Numéro" />
+      <CheckBox fx:id="nomCB" layoutX="34.0" layoutY="79.0" mnemonicParsing="false" text="Nom" />
+      <CheckBox fx:id="prenomCB" layoutX="34.0" layoutY="106.0" mnemonicParsing="false" text="Prénom" />
+      <CheckBox fx:id="dateDeNaissanceCB" layoutX="34.0" layoutY="134.0" mnemonicParsing="false" text="Date de naissance" />
+      <CheckBox fx:id="knownForCB" layoutX="34.0" layoutY="159.0" mnemonicParsing="false" text="Connu pour" />
+      <CheckBox fx:id="lastOccurenceCB" layoutX="34.0" layoutY="183.0" mnemonicParsing="false" text="Dernière occurence" />
+      <Label layoutX="90.0" layoutY="14.0" text="Colonnes à inclure dans le fichier Excel" />
+      <Button fx:id="creerButton" layoutX="14.0" layoutY="227.0" mnemonicParsing="false" text="Créer" />
+      <Button fx:id="annulerButton" layoutX="331.0" layoutY="227.0" mnemonicParsing="false" text="Annuler" />
+      <CheckBox fx:id="ageCB" layoutX="258.0" layoutY="54.0" mnemonicParsing="false" text="Âge" />
+      <CheckBox fx:id="sourceCB" layoutX="258.0" layoutY="79.0" mnemonicParsing="false" text="Source" />
+      <CheckBox fx:id="dateDeConvocationCB" layoutX="258.0" layoutY="106.0" mnemonicParsing="false" text="Date de convocation" />
+      <CheckBox fx:id="adressCB" layoutX="258.0" layoutY="134.0" mnemonicParsing="false" text="Adresse" />
+      <CheckBox fx:id="checkBoxCheckAll" layoutX="158.0" layoutY="231.0" mnemonicParsing="false" text="Tout sélectionner" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="158.0" AnchorPane.rightAnchor="129.0" AnchorPane.topAnchor="231.0" />
+   </children>
+</AnchorPane>
