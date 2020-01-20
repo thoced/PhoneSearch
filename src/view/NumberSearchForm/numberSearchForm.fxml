@@ -6,73 +6,80 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<AnchorPane fx:id="scene" minWidth="1060.0" prefHeight="750.0" prefWidth="1139.0" stylesheets="@NumberSearchFormStyle.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.NumberSearchForm.NumberSearchFormController">
-   <children>
-      <BorderPane prefHeight="733.0" prefWidth="1128.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <center>
-            <SplitPane dividerPositions="0.17635270541082165" prefHeight="588.0" prefWidth="804.0" BorderPane.alignment="CENTER">
-              <items>
+<AnchorPane fx:id="scene" minWidth="1060.0" prefHeight="750.0" prefWidth="1139.0"
+            stylesheets="@NumberSearchFormStyle.css" xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.NumberSearchForm.NumberSearchFormController">
+    <BorderPane prefHeight="733.0" prefWidth="1128.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <center>
+            <SplitPane dividerPositions="0.17635270541082165" prefHeight="588.0" prefWidth="804.0"
+                       BorderPane.alignment="CENTER">
                 <AnchorPane maxWidth="200.0" minHeight="0.0" minWidth="200.0" prefHeight="160.0" prefWidth="200.0">
-                     <children>
-                        <TextArea fx:id="textArea" layoutX="14.0" layoutY="14.0" maxWidth="200.0" prefHeight="668.0" prefWidth="172.0" AnchorPane.bottomAnchor="47.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
-                        <Button fx:id="button" layoutX="14.0" layoutY="690.0" mnemonicParsing="false" text="Chercher" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" />
-                     </children>
-                  </AnchorPane>
+                    <TextArea fx:id="textArea" layoutX="14.0" layoutY="14.0" maxWidth="200.0" prefHeight="668.0"
+                              prefWidth="172.0" AnchorPane.bottomAnchor="47.0" AnchorPane.leftAnchor="14.0"
+                              AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0"/>
+                    <Button fx:id="button" layoutX="14.0" layoutY="690.0" mnemonicParsing="false"
+                            text="Chercher" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0"
+                            AnchorPane.rightAnchor="14.0"/>
+                </AnchorPane>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="748.0" prefWidth="921.0">
-                     <children>
-                        <TableView fx:id="tableView" editable="true" layoutX="14.0" layoutY="14.0" prefHeight="687.0" prefWidth="824.0" styleClass="tableView" AnchorPane.bottomAnchor="47.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
-                          <columns>
-                              <TableColumn fx:id="tableColumnChecked" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" text="#" />
-                            <TableColumn fx:id="tableColumnNumber" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" resizable="false" text="Numéro" />
-                            <TableColumn fx:id="tableColumnName" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" resizable="false" styleClass="name" text="Nom" />
-                              <TableColumn fx:id="tableColumnFirsName" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" resizable="false" styleClass="firstName" text="Prénom" />
-                              <TableColumn fx:id="tableColumnDateDeNaissance" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" resizable="false" styleClass="dateOfBirth" text="Date de Naissance" />
-                              <TableColumn fx:id="tableColumnKnown" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" resizable="false" styleClass="dateOfBirth" text="Connu pour" />
-                              <TableColumn fx:id="tableColumnLastOccurence" minWidth="120.0" prefWidth="120.0" styleClass="dateOfBirth" text="Dernière occurence" />
-                          </columns>
-                           <columnResizePolicy>
-                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                           </columnResizePolicy>
-                        </TableView>
-                        <CheckBox fx:id="checkBoxCheckAll" layoutX="14.0" layoutY="714.0" mnemonicParsing="false" text="Tout sélectionner" AnchorPane.bottomAnchor="17.0" AnchorPane.leftAnchor="14.0" />
-                        <ComboBox fx:id="comboBoxFilter" layoutX="241.0" layoutY="710.0" prefWidth="150.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="241.0" />
-                        <Label layoutX="160.0" layoutY="683.0" text="Connu pour :" AnchorPane.bottomAnchor="17.0" AnchorPane.leftAnchor="160.0" />
-                        <Label layoutX="398.0" layoutY="714.0" text="Affichage :" AnchorPane.bottomAnchor="17.0" AnchorPane.leftAnchor="398.0" />
-                        <ComboBox fx:id="comboBoxDisplay" layoutX="463.0" layoutY="710.0" prefHeight="25.0" prefWidth="261.0" AnchorPane.bottomAnchor="13.0" AnchorPane.leftAnchor="463.0" />
-                     </children>
-                  </AnchorPane>
-              </items>
+                    <Label text="Filtre :" AnchorPane.bottomAnchor="17.0" AnchorPane.rightAnchor="175.0"/>
+                    <TextField fx:id="textFieldFiltering" layoutX="772.0" layoutY="643.0"
+                               AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0"/>
+                    <CheckBox fx:id="checkBoxCheckAll" layoutX="14.0" layoutY="714.0" mnemonicParsing="false"
+                              text="Tout sélectionner" AnchorPane.bottomAnchor="17.0"
+                              AnchorPane.leftAnchor="14.0"/>
+                    <ComboBox fx:id="comboBoxFilter" layoutX="241.0" layoutY="710.0" prefWidth="150.0"
+                              AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="241.0"/>
+                    <Label layoutX="160.0" layoutY="683.0" text="Connu pour :" AnchorPane.bottomAnchor="17.0"
+                           AnchorPane.leftAnchor="160.0"/>
+                    <TreeTableView fx:id="treeTableView" layoutX="14.0" layoutY="14.0" prefHeight="618.0"
+                                   prefWidth="902.0" AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="14.0"
+                                   AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+                        <columns>
+                            <TreeTableColumn fx:id="treeTableColumnChecked" prefWidth="56.0" text="#"/>
+                            <TreeTableColumn fx:id="treeTableColumnNumber" prefWidth="138.0" text="Numéro"/>
+                            <TreeTableColumn fx:id="treeTableColumnName" prefWidth="203.0" styleClass="name"
+                                             text="Nom"/>
+                            <TreeTableColumn fx:id="treeTableColumnFirstName" minWidth="0.0" prefWidth="186.0"
+                                             styleClass="firstName" text="Prénom"/>
+                            <TreeTableColumn fx:id="treeTableColumnDateOfBirth" minWidth="0.0" prefWidth="111.0"
+                                             styleClass="dateOfBirth" text="Date de naissance"/>
+                            <TreeTableColumn fx:id="treeTableColumnKnownFor" prefWidth="115.0"
+                                             text="Connu pour"/>
+                            <TreeTableColumn fx:id="treeTableColumnLastOccurence" prefWidth="92.0"
+                                             text="Dernière occurence"/>
+                        </columns>
+                    </TreeTableView>
+                </AnchorPane>
             </SplitPane>
-         </center>
-         <bottom>
+        </center>
+        <bottom>
             <AnchorPane prefHeight="31.0" prefWidth="1139.0" BorderPane.alignment="CENTER">
-               <children>
-                  <Label layoutX="14.0" layoutY="6.0" text="Connexion: " AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="14.0" />
-                  <Label fx:id="connexionLabel" layoutX="87.0" layoutY="6.0" text="Déconnecté" />
-                  <Label fx:id="resultLabel" layoutX="1069.0" layoutY="6.0" text="1240 éléments sur 1300" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="14.0" />
-                  <Label layoutX="941.0" layoutY="5.0" text="Résultat :" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="149.0" />
-                  <TextField fx:id="textFieldFiltering" layoutX="783.0" layoutY="2.0" AnchorPane.bottomAnchor="4.0" AnchorPane.rightAnchor="207.0" />
-                  <Label layoutX="740.0" layoutY="5.0" text="Filtre :" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="366.0" />
-                  <ProgressBar fx:id="progressBar" layoutX="170.0" layoutY="7.0" prefWidth="200.0" progress="0.0" AnchorPane.leftAnchor="200.0" />
-               </children>
+                <Label layoutX="14.0" layoutY="6.0" text="Connexion: " AnchorPane.bottomAnchor="8.0"
+                       AnchorPane.leftAnchor="14.0"/>
+                <Label fx:id="connexionLabel" layoutX="87.0" layoutY="6.0" text="Déconnecté"/>
+                <Label fx:id="resultLabel" layoutX="1069.0" layoutY="6.0" text="1240 éléments sur 1300"
+                       AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="14.0"/>
+                <Label layoutX="941.0" layoutY="5.0" text="Résultat :" AnchorPane.bottomAnchor="9.0"
+                       AnchorPane.rightAnchor="220.0"/>
+                <ProgressBar fx:id="progressBar" layoutX="170.0" layoutY="7.0" prefWidth="200.0" progress="0.0"
+                             AnchorPane.leftAnchor="200.0"/>
             </AnchorPane>
-         </bottom>
-         <top>
+        </bottom>
+        <top>
             <ToolBar fx:id="toolBar" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-              <items>
-                <Button fx:id="buttonExcelExport" mnemonicParsing="false" styleClass="exportButton" text="Button" />
-                  <Button fx:id="buttonWordExport" mnemonicParsing="false" styleClass="exportButton" text="Button" />
-              </items>
+                <Button fx:id="buttonExcelExport" mnemonicParsing="false" styleClass="exportButton" text="Button"/>
+                <Button fx:id="buttonWordExport" mnemonicParsing="false" styleClass="exportButton" text="Button"/>
             </ToolBar>
-         </top>
-      </BorderPane>
-   </children>
+        </top>
+    </BorderPane>
 </AnchorPane>

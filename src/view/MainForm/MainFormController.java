@@ -51,14 +51,14 @@ public class MainFormController {
         //Initialisation du TreeView
         
         ArrayList<Section> sections = Section.getSections();
-        TreeItem<Dossier> root = new TreeItem<Dossier>(new Dossier("SLR - ZP Seraing/Neupré"));
+        TreeItem<Dossier> root = new TreeItem<>(new Dossier("SLR - ZP Seraing/Neupré"));
         root.setExpanded(true);
 
         for(Section section : sections){
-            TreeItem<Dossier> departementItem = new TreeItem<Dossier>(new Dossier(section.getName()));
+            TreeItem<Dossier> departementItem = new TreeItem<>(new Dossier(section.getName()));
             root.getChildren().add(departementItem);
-            ArrayList<Dossier> dossiers = ((Section)section).getDossiers();
-            dossiers.forEach((d)->departementItem.getChildren().add(new TreeItem<Dossier>(d)));
+            ArrayList<Dossier> dossiers = section.getDossiers();
+            dossiers.forEach((d)->departementItem.getChildren().add(new TreeItem<>(d)));
         }
 
         menuItemClose.setOnAction(this::menuItemClose_action);
@@ -80,9 +80,9 @@ public class MainFormController {
     private void menuItemFindSomeNumbers_action(ActionEvent event){
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(NumberSearchFormController.class.getResource("numberSearchForm.fxml"));
-        AnchorPane scene  = null;
+        AnchorPane scene;
         try {
-            scene = (AnchorPane)loader.load();
+            scene = loader.load();
         }
         catch (IOException e){
 
@@ -94,7 +94,7 @@ public class MainFormController {
 
         Stage stage = new Stage();
         stage.setTitle("Rechercher des numéros");
-        stage.setScene(new Scene(scene,1060,750));
+        stage.setScene(new Scene(scene,1150,750));
         stage.setMinHeight(400);
         stage.setMinWidth(1060);
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/pictures/islpSearch.png")));
@@ -107,9 +107,9 @@ public class MainFormController {
     private void menuItemPreferences_action(ActionEvent event){
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(SettingsFormController.class.getResource("SettingsForm.fxml"));
-        AnchorPane scene = null;
+        AnchorPane scene;
         try{
-            scene = (AnchorPane)loader.load();
+            scene = loader.load();
         }
         catch (IOException e){
             e.printStackTrace();

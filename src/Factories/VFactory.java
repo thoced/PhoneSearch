@@ -29,5 +29,8 @@ public abstract class VFactory {
     }
 
     public final static Boolean DEBUG_NUMBER_SEARCH_FORM = true;
-    public final static Boolean DEBUG_WORD_EXPORT_FORM = true;
+    public final static Boolean DEBUG_WORD_EXPORT_FORM = false;
+
+    public final static Boolean Enable_NumSearch_Excel_Export = true;
+    public final static Boolean Enable_NumSearch_Word_Export = false;
 }
