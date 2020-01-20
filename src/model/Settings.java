@@ -24,6 +24,7 @@ public class Settings {
     private String convocationSourceFileName = "";
     private String exportersDefaultDirectory = "";
     private Boolean genericConvocation= false;
+    private Boolean openAppOnExport = true;
 
     private Settings() throws IOException{
         fileName = "." + File.separator + "config.cfg";
@@ -46,6 +47,7 @@ public class Settings {
         properties.setProperty("convocationFirstHour", this.convocationFirstHour.getHour() + ":" + this.convocationFirstHour.getMinute() + ":" + this.convocationFirstHour.getSecond());
         properties.setProperty("convocationInterval", String.valueOf(this.convocationInterval));
         properties.setProperty("genericConvocation", this.genericConvocation?"1":"0");
+        properties.setProperty("openAppOnExport", this.openAppOnExport?"1":"0");
 
         FileOutputStream fileOutputStream = new FileOutputStream(fileName);
         properties.store(fileOutputStream,null);
@@ -99,6 +101,8 @@ public class Settings {
 
             if(properties.getProperty("genericConvocation")!=null)
                 this.genericConvocation = properties.getProperty("genericConvocation").equals("1");
+            if(properties.getProperty("openAppOnExport")!=null)
+                this.genericConvocation = properties.getProperty("openAppOnExport").equals("1");
         }
         catch (IOException e){
             e.printStackTrace();
@@ -185,4 +189,8 @@ public class Settings {
     public void setGenericConvocation(Boolean genericConvocation) {
         this.genericConvocation = genericConvocation;
     }
+
+    public Boolean getOpenAppOnExport(){return  openAppOnExport; }
+
+    public void setOpenAppOnExport(Boolean value){ this.openAppOnExport = value; }
 }
