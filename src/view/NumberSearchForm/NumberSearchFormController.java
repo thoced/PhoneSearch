@@ -5,6 +5,7 @@ import Factories.VFactory;
 import com.Vickx.Biblix.Date.DateTime;
 import com.Vickx.Biblix.Helper;
 import javafx.beans.Observable;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -18,8 +19,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
@@ -27,12 +27,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import model.*;
 import model.Exporters.ConvocationExporter;
 import model.Exporters.NumberSearchFormExcelExporter;
-import model.PhoneNumber;
-import model.Record;
-import model.RecordCollection;
-import model.Settings;
+import org.apache.poi.hssf.record.PageBreakRecord;
 import org.apache.poi.ss.usermodel.Workbook;
 import view.ExportersForms.ExcelExportFormForNumberSearch.ExcelExportFormForNumberSearchController;
 import view.ExportersForms.WordExportForm.WordExportFormController;
@@ -49,6 +47,9 @@ public class NumberSearchFormController {
 
     //region FXML binds
 
+    //region TableView
+
+    /*
     @FXML
     TableView<Record> tableView;
 
@@ -72,12 +73,40 @@ public class NumberSearchFormController {
 
     @FXML
     TableColumn<Record, String> tableColumnLastOccurence;
+    */
+
+    //endregion
+
+    //region TreeTableView
+
+    @FXML
+    TreeTableView<Record> treeTableView;
+
+    @FXML
+    TreeTableColumn<Record,Boolean> treeTableColumnChecked;
+
+    @FXML
+    TreeTableColumn<Record,String> treeTableColumnNumber;
+
+    @FXML
+    TreeTableColumn<Record, String> treeTableColumnName;
+
+    @FXML
+    TreeTableColumn<Record,String> treeTableColumnFirstName;
+
+    @FXML
+    TreeTableColumn<Record,String> treeTableColumnDateOfBirth;
+    @FXML
+    TreeTableColumn<Record,String> treeTableColumnKnownFor;
+    @FXML
+    TreeTableColumn<Record,String> treeTableColumnLastOccurence;
+
+    //endregion
+
+    //region Components
 
     @FXML
     ComboBox<String> comboBoxFilter;
-
-    @FXML
-    ComboBox<String> comboBoxDisplay;
 
     @FXML
     TextArea textArea;
@@ -114,11 +143,15 @@ public class NumberSearchFormController {
 
     //endregion
 
+    //endregion
+
     //region membres
 
     RecordCollection records = new RecordCollection();
 
     Stage stage;
+
+    int totalItems = 0;
 
     //endregion
 
@@ -128,7 +161,7 @@ public class NumberSearchFormController {
     private void initialize() {
 
         this.initializeComponents();
-        this.initializeColumns();
+        this.initializeTreeTableView();
         if(VFactory.getDbo().isConnected())
             this.connexionLabel.setText("Connecté");
         else
@@ -142,7 +175,6 @@ public class NumberSearchFormController {
             this.textArea.setText("32");
             this.button_click();
             this.checkBoxCheckAll.setSelected(true);
-            this.ckeckAllCheckBox_change_selected(new ActionEvent());
             this.buttonWordExport_click(new ActionEvent());
         }
     }
@@ -159,20 +191,14 @@ public class NumberSearchFormController {
         this.comboBoxFilter.getItems().add(5,"Stups");
         this.comboBoxFilter.getItems().add(6,"Vols");
         this.comboBoxFilter.getSelectionModel().select(0);
-        this.comboBoxFilter.setOnAction(this::comboBoxFilter_change);
-
-        this.comboBoxDisplay.getItems().add(0,"Groupé");
-        this.comboBoxDisplay.getItems().add(1,"Dégroupé");
-        this.comboBoxDisplay.getSelectionModel().select(0);
-        this.comboBoxDisplay.setOnAction(this::comboBoxDisplay_change);
-
+        this.comboBoxFilter.setOnAction(event -> this.updateItems());
 
         //endregion
 
         //region Divers
 
         this.button.setOnAction(actionEvent -> button_click());
-
+        this.textFieldFiltering.textProperty().addListener((event) -> this.updateItems());
         this.resultLabel.setText("aucun élément");
 
         //endregion
@@ -185,7 +211,7 @@ public class NumberSearchFormController {
 
         MenuItem menuItemCopier= new MenuItem("Copier");
         contextMenu.getItems().add(menuItemCopier);
-        menuItemCopier.setOnAction(event -> this.copySelectionToClipboard(this.tableView));
+        menuItemCopier.setOnAction(event -> this.copySelectionToClipboard(this.treeTableView));
 
         Menu menuBNG= new Menu("Marquer l'identité comme connue :");
         menuBNG.setDisable(true);
@@ -238,11 +264,13 @@ public class NumberSearchFormController {
         contextMenu.getItems().add(idTrack);
         idTrack.setOnAction(this::identityTrack_click);
 
-        this.tableView.setContextMenu(contextMenu);
+        this.treeTableView.setContextMenu(contextMenu);
 
         //endregion
 
         //region ToolBar
+
+        //region Excel
 
         this.buttonExcelExport.setText("");
         Image exportIcon = new Image(getClass().getResourceAsStream("/pictures/Excel_export.png"));
@@ -261,6 +289,11 @@ public class NumberSearchFormController {
                 this.buttonExcelExport_click(new ActionEvent());
         });
 
+        this.buttonExcelExport.setDisable(!VFactory.Enable_NumSearch_Excel_Export);
+
+        //endregion
+
+        //region Word
 
         this.buttonWordExport.setText("");
         ImageView wordImageView = new ImageView(new Image(getClass().getResourceAsStream("/pictures/Word_export.png")));
@@ -277,116 +310,140 @@ public class NumberSearchFormController {
             if(keyCodeWord.match(event))
                 this.buttonWordExport_click(new ActionEvent());
         });
-        this.buttonWordExport.setDisable(true);
+        this.buttonWordExport.setDisable(!VFactory.Enable_NumSearch_Word_Export);
+
+        //endregion
 
         //endregion
 
         this.checkBoxCheckAll.setOnAction(this::ckeckAllCheckBox_change_selected);
+        this.treeTableView.setOnMouseClicked(this::treeTableViewMouseClick);
 
         this.progressBar.setVisible(false);
 
+        final KeyCodeCombination keyCodeCopy = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_ANY);
+        this.treeTableView.setOnKeyPressed(event -> {if(keyCodeCopy.match(event))copySelectionToClipboard(this.treeTableView);});
+
     }
 
+    private void initializeTreeTableView() {
 
-    private void initializeColumns() {
+        this.treeTableView.setEditable(true);
+        this.treeTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        TreeItem<Record> rootNode = new TreeItem<>(new Record(new Identity("root","root",DateTime.Now()),new PhoneNumber("")));
+        this.treeTableView.setRoot(rootNode);
+        this.treeTableView.setShowRoot(false);
 
-        tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        this.treeTableColumnChecked.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.treeTableColumnChecked));
+        this.treeTableColumnChecked.setEditable(true);
+        this.treeTableColumnChecked.setCellValueFactory((TreeTableColumn.CellDataFeatures<Record,Boolean> p) -> p.getValue().getValue().getSelectedProperty());
 
-        //region Values Factories (détermine les valeurs à afficher)
+        this.treeTableColumnNumber.setCellValueFactory((TreeTableColumn.CellDataFeatures<Record,String> p) -> p.getValue().getValue().getPhoneNumberProperty());
+        this.treeTableColumnNumber.setCellFactory((TreeTableColumn<Record,String> param) -> new TreeTableCell<Record,String>(){
+            @Override
+            protected void updateItem(String phoneNumber, boolean empty){
+                super.updateItem(phoneNumber,empty);
+                TreeTableRow<Record> treeTableRow = getTreeTableRow();
+                int index = treeTableRow.getIndex();
+                if(index%2 == 0)
+                    treeTableRow.setStyle("-fx-background-color:#bdd7ee;");
+                else
+                    treeTableRow.setStyle("-fx-background-color:#ddebf7;");
+                setText(phoneNumber);
+            }
+        });
 
-        this.tableColumnNumber.setCellValueFactory(cellData -> cellData.getValue().getPhoneNumberProperty());
-        this.tableColumnName.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
-        this.tableColumnFirsName.setCellValueFactory(cellData -> cellData.getValue().getFirstNameProperty());
-        this.tableColumnDateDeNaissance.setCellValueFactory(cellData -> cellData.getValue().getDateDeNaissanceProperty());
-        this.tableColumnKnown.setCellValueFactory(cellData -> cellData.getValue().getKnownForProperty());
-        this.tableColumnLastOccurence.setCellValueFactory(cellData -> cellData.getValue().getLastOccurenceProperty());
-        this.tableColumnChecked.setCellValueFactory(new PropertyValueFactory<>("selected"));
+        this.treeTableColumnName.setCellValueFactory((TreeTableColumn.CellDataFeatures<Record,String> p) -> p.getValue().getValue().getNameProperty());
 
-        //endregion
+        this.treeTableColumnFirstName.setCellValueFactory((TreeTableColumn.CellDataFeatures<Record,String> p) -> p.getValue().getValue().getFirstNameProperty());
 
-        //region Cell Factories (détermine comment les valeurs sont affichées
+        this.treeTableColumnDateOfBirth.setCellValueFactory((TreeTableColumn.CellDataFeatures<Record,String> p) -> p.getValue().getValue().getDateDeNaissanceProperty());
 
-        this.tableColumnChecked.setCellFactory(CheckBoxTableCell.forTableColumn(this.tableColumnChecked));
+        this.treeTableColumnKnownFor.setCellFactory(KnowComponentTableCellFactory.forTreeTableColumn());
+        this.treeTableColumnKnownFor.setCellValueFactory((TreeTableColumn.CellDataFeatures<Record,String> p) ->  p.getValue().getValue().getKnownForProperty());
 
-        this.tableColumnChecked.setCellFactory(CheckBoxTableCell.forTableColumn(this.tableColumnChecked));
-
-        this.tableColumnNumber.setCellFactory(NumberComponentTableCellFactory.forTableColumn(tableView,this.comboBoxDisplay.getSelectionModel().getSelectedIndex() == 1));
-
-        this.tableColumnKnown.setCellFactory(column ->new KnowComponentTableCellFactory<>());
-
-        //endregion
-
-        //region propriétés des colonnes
-
-        this.tableColumnChecked.setSortable(false);
-        this.tableColumnDateDeNaissance.setSortable(false);
-        this.tableColumnKnown.setSortable(false);
-        this.tableColumnLastOccurence.setSortable(false);
-
-        //endregion
-
-        //region Events
-
-        this.tableView.getSortOrder().addListener((Observable o) -> columnSorting_Change());
-        final KeyCodeCombination keyCodeCopy = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_ANY);
-        this.tableView.setOnKeyPressed(event -> {if(keyCodeCopy.match(event))copySelectionToClipboard(this.tableView);});
-        this.tableView.setOnMouseClicked(this::tableView_Mouse_Click);
-
-        //endregion
-
+        this.treeTableColumnLastOccurence.setCellValueFactory((TreeTableColumn.CellDataFeatures<Record,String> p) -> p.getValue().getValue().getLastOccurenceProperty());
 
     }
 
     //endregion
 
-    /**
-        Nécessaire car sinon ne dégroupe pas.
-     */
     private void updateItems(){
+        boolean nofilter = this.textFieldFiltering.getText().equals("") && this.comboBoxFilter.getSelectionModel().getSelectedIndex()==0;
 
-        ObservableList<Record> items;
-        boolean grouped = this.comboBoxDisplay.getSelectionModel().getSelectedIndex() == 0;
-        if(grouped)
-            items = FXCollections.observableArrayList(this.records.getGroupedRecords());
+        if(nofilter)
+            this.totalItems = 0;
+
+        TreeItem<Record> root = this.treeTableView.getRoot();
+        root.getChildren().clear();
+
+        TreeItem<Record> previous = null;
+
+        String lowerCasFilter = this.textFieldFiltering.getText().toLowerCase();
+
+        for(Record record : this.records){
+
+            //Filtre sur le textField
+            if (!record.getName().toLowerCase().contains(lowerCasFilter) && !record.getFirstName().toLowerCase().contains(lowerCasFilter) && !record.getPhoneNumber().toString().contains(lowerCasFilter))
+                continue;
+
+            //region Filtre sur "connu pour"
+
+            if(this.comboBoxFilter.getSelectionModel().getSelectedIndex() !=0){
+                switch (this.comboBoxFilter.getSelectionModel().getSelectedIndex()) {
+                    case 1:
+                        if(!record.getKnownFor().equals(""))
+                            continue;
+                        break;
+                    case 2:
+                        if(!record.getKnownFor().contains("C"))
+                            continue;
+                        break;
+                    case 3:
+                        if(!record.getKnownFor().contains("E"))
+                            continue;
+                        break;
+                    case 4:
+                        if(!record.getKnownFor().contains("M"))
+                            continue;
+                        break;
+                    case 5:
+                        if(!record.getKnownFor().contains("S"))
+                            continue;
+                        break;
+                    case 6:
+                        if(!record.getKnownFor().contains("V"))
+                            continue;
+                        break;
+                }
+            }
+
+            //endregion
+
+            TreeItem<Record> item = new TreeItem<>(record);
+
+            if(previous == null || !previous.getValue().getPhoneNumber().equals(item.getValue().getPhoneNumber())) {
+                root.getChildren().add(item);
+                previous = item;
+                if(nofilter)
+                    this.totalItems++;
+            }
+            else
+                previous.getChildren().add(item);
+        }
+        int resultToShow = this.treeTableView.getRoot().getChildren().size();
+
+        if(resultToShow == this.records.size())
+            this.resultLabel.setText( resultToShow + " résultat" + (resultToShow>1?"s":""));
         else
-            items = FXCollections.observableArrayList(records.getRecords());
+            this.resultLabel.setText(resultToShow + " résultat" + (resultToShow>1?"s":"") + " sur " + this.totalItems);
 
-        FilteredList<Record> filteredList = new FilteredList<Record>(items, r->true);
-
-        this.textFieldFiltering.textProperty().addListener((observable, oldValue, newValue) ->{
-            filteredList.setPredicate(record -> {
-                if(newValue == null || newValue.isEmpty()){
-                    return true;
-                }
-
-                String lowerCaseFilter = newValue.toLowerCase();
-
-                if(record.getNameProperty().getValue().toLowerCase().contains(lowerCaseFilter)){
-                    return true;
-                }
-                else{
-                    if(record.getFirstNameProperty().getValue().toLowerCase().contains(lowerCaseFilter))
-                        return true;
-                    else{
-                        return record.getPhoneNumber().toString().contains(lowerCaseFilter);
-                    }
-                }
-            });
-        });
-
-        SortedList<Record> sortedList = new SortedList<>(filteredList);
-
-        sortedList.comparatorProperty().bind(tableView.comparatorProperty());
-        this.tableColumnName.setSortType(TableColumn.SortType.ASCENDING);
-        this.tableView.setItems(sortedList);
+        //this.resultLabel.setText(this.resultLabel.getText() + " (" + this.records.size() + " identité" + (this.records.size()>1?"s":"") + ")");
     }
 
     //region EventHandlers
 
     private void button_click() {
-
-
-        final KeyCodeCombination keyCodeCopy = new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_ANY);
 
         ArrayList<String> phoneNumbers = new ArrayList<>();
 
@@ -470,11 +527,12 @@ public class NumberSearchFormController {
         this.records.clear();
         this.checkBoxCheckAll.setSelected(false);
 
-        if(phoneNumbers.size() > 0)
+        if(phoneNumbers.size() > 0) {
             this.records.addAll(PhoneNumber.getIdentities(phoneNumbers));
+            this.records.sort();
+        }
 
         this.updateItems();
-
     }
 
     private void buttonExcelExport_click(ActionEvent event){
@@ -484,9 +542,17 @@ public class NumberSearchFormController {
         RecordCollection selectedRecords = new RecordCollection();
 
         //Stoque les objets sélectionnés dans une liste
-        for(Record r : this.tableView.getItems()){
-            if(r.isSelected()) {
-                selectedRecords.add(r);
+
+        for(TreeItem<Record> item: this.treeTableView.getRoot().getChildren()){
+
+            if(item.getValue().isSelected())
+                selectedRecords.add(item.getValue());
+
+            if(item.getChildren().size() !=0){
+                for(TreeItem<Record> child: item.getChildren()){
+                    if(child.getValue().isSelected())
+                        selectedRecords.add(child.getValue());
+                }
             }
         }
 
@@ -504,9 +570,9 @@ public class NumberSearchFormController {
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(ExcelExportFormForNumberSearchController.class.getResource("ExcelExportFormForNumberSearch.fxml"));
-        AnchorPane scene = null;
+        AnchorPane scene ;
         try{
-            scene = (AnchorPane)loader.load();
+            scene = loader.load();
         }
         catch (IOException e){
             e.printStackTrace();
@@ -590,9 +656,17 @@ public class NumberSearchFormController {
         RecordCollection selectedRecords = new RecordCollection();
 
         //Stoque les objets sélectionnés dans une liste
-        for(Record r : this.tableView.getItems()){
-            if(r.isSelected()) {
-                selectedRecords.add(r);
+
+        for(TreeItem<Record> treeItem : this.treeTableView.getRoot().getChildren()){
+            Record record = treeItem.getValue();
+            if(record.isSelected())
+                selectedRecords.add(record);
+
+            if(treeItem.getChildren().size() > 0){
+                for(TreeItem<Record> child : treeItem.getChildren()){
+                    if(record.isSelected())
+                        selectedRecords.add(record);
+                }
             }
         }
 
@@ -610,9 +684,9 @@ public class NumberSearchFormController {
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(WordExportFormController.class.getResource("WordExportForm.fxml"));
-        AnchorPane scene = null;
+        AnchorPane scene;
         try{
-            scene = (AnchorPane)loader.load();
+            scene = loader.load();
         }
         catch (IOException e){
             e.printStackTrace();
@@ -638,51 +712,26 @@ public class NumberSearchFormController {
 
     }
 
-    private void comboBoxDisplay_change(ActionEvent event){
-        this.updateItems();
-    }
-
-    private void comboBoxFilter_change(ActionEvent event) {
-
-        switch (this.comboBoxFilter.getSelectionModel().getSelectedIndex()){
-            case 0: this.records.setFilter(""); break;
-            case 1: this.records.setFilter("U"); break;
-            case 2: this.records.setFilter("C"); break;
-            case 3: this.records.setFilter("E"); break;
-            case 4: this.records.setFilter("M"); break;
-            case 5: this.records.setFilter("S"); break;
-            case 6: this.records.setFilter("V"); break;
-        }
-        this.updateItems();
-    }
-
-    private void columnSorting_Change() {
-
-        if(this.tableView.getSortOrder().size() == 0) {
-            return;
-        }
-
-        @SuppressWarnings("unchecked")
-        TableColumn<Record,String> sortedColumn = (TableColumn<Record, String>) this.tableView.getSortOrder().get(0);
-
-        if(sortedColumn != this.tableColumnNumber)
-            this.comboBoxDisplay.getSelectionModel().select(1);
-
-        this.updateItems();
-
-    }
-
     private void ckeckAllCheckBox_change_selected(ActionEvent event){
 
-        for(Record r : this.tableView.getItems())
-            r.setSelected(this.checkBoxCheckAll.isSelected());
+        for(TreeItem<Record> treeItem : this.treeTableView.getRoot().getChildren()){
+
+            treeItem.getValue().setSelected(this.checkBoxCheckAll.isSelected());
+
+            if((treeItem.getChildren().size() != 0 && treeItem.isExpanded()) || !this.checkBoxCheckAll.isSelected()) {
+                for(TreeItem<Record> child : treeItem.getChildren()){
+                    child.getValue().setSelected(this.checkBoxCheckAll.isSelected());
+                }
+            }
+
+        }
     }
 
-    public void copySelectionToClipboard(final TableView<?> table) {
+    public void copySelectionToClipboard(final TreeTableView<?> table) {
 
         final Set<Integer> rows = new TreeSet<>();
 
-        for (final TablePosition<?,?> tablePosition : table.getSelectionModel().getSelectedCells()) {
+        for (final TreeTablePosition<?,?> tablePosition : table.getSelectionModel().getSelectedCells()) {
             rows.add(tablePosition.getRow());
         }
 
@@ -696,8 +745,8 @@ public class NumberSearchFormController {
             }
             firstRow = false;
             boolean firstCol = true;
-            for (final TableColumn<?, ?> column : table.getColumns()) {
-                if(column.equals(tableColumnChecked))
+            for (final TreeTableColumn<?, ?> column : table.getColumns()) {
+                if(column.equals(treeTableColumnChecked))
                     continue;
 
                 if (!firstCol) {
@@ -705,10 +754,8 @@ public class NumberSearchFormController {
                 }
                 firstCol = false;
                 final Object cellData = column.getCellData(row);
-                if(column.equals(tableColumnKnown)){
-                    if(cellData.toString().equals(""))
-                        strb.append("");
-                    else {
+                if(column.equals(treeTableColumnKnownFor)){
+                    if(!cellData.toString().equals("")) {
                         String value = cellData.toString();
 
                         boolean firstValue = true;
@@ -743,7 +790,6 @@ public class NumberSearchFormController {
                             if (!firstValue)
                                 strb.append(' ');
                             strb.append("Vols");
-                            firstValue =false;
                         }
 
                     }
@@ -755,15 +801,17 @@ public class NumberSearchFormController {
         final ClipboardContent clipboardContent = new ClipboardContent();
         clipboardContent.putString(strb.toString());
         Clipboard.getSystemClipboard().setContent(clipboardContent);
+
+
     }
 
     private void numberTrack_Click(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(NumberTrackFormController.class.getResource("NumberTrackForm.fxml"));
-        AnchorPane scene = null;
+        AnchorPane scene;
 
         try {
-            scene = (AnchorPane) loader.load();
+            scene = loader.load();
         }
         catch (IOException e){
             e.printStackTrace();
@@ -773,20 +821,34 @@ public class NumberSearchFormController {
         numberTrackForm.setTitle("Historique du numéro");
         numberTrackForm.setScene(new Scene(scene, 700,500));
         NumberTrackFormController controller = loader.getController();
-        TablePosition<?,?> tablePosition = this.tableView.getSelectionModel().getSelectedCells().get(0);
-        Record record = this.tableView.getItems().get(tablePosition.getRow());
+        Record record = this.treeTableView.getSelectionModel().getSelectedItem().getValue();
         controller.setStage(numberTrackForm);
         controller.setPhoneNumber(record.getPhoneNumber());
         numberTrackForm.show();
     }
 
-    private void identityTrack_click(ActionEvent event){
+    private void treeTableViewMouseClick(MouseEvent mouseEvent) {
+        if(mouseEvent.getClickCount() < 2)
+            return;
+        if(treeTableView.getSelectionModel().getSelectedCells().size() == 0)
+            return;
+
+        TreeTablePosition<?,?> tablePosition = this.treeTableView.getSelectionModel().getSelectedCells().get(0);
+        int col = tablePosition.getColumn();
+
+        if(col == 1)
+            this.numberTrack_Click(new ActionEvent());
+        if(col == 2 || col == 3)
+            this.identityTrack_click(new ActionEvent());
+    }
+
+    private void identityTrack_click(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(IdentityTrackFormController.class.getResource("IdentityTrackForm.fxml"));
-        AnchorPane scene = null;
+        AnchorPane scene;
 
         try {
-            scene = (AnchorPane) loader.load();
+            scene = loader.load();
         }
         catch (IOException e){
             e.printStackTrace();
@@ -796,40 +858,17 @@ public class NumberSearchFormController {
         idTrackForm.setTitle("Historique du numéro");
         idTrackForm.setScene(new Scene(scene, 700,500));
         IdentityTrackFormController controller = loader.getController();
-        TablePosition<?,?> tablePosition = this.tableView.getSelectionModel().getSelectedCells().get(0);
-        Record record = this.tableView.getItems().get(tablePosition.getRow());
+        Record record = this.treeTableView.getSelectionModel().getSelectedItem().getValue();
         controller.setStage(idTrackForm);
         controller.setIdentity(record.getIdentity());
         idTrackForm.show();
-    }
-
-    private void tableView_Mouse_Click(MouseEvent mouseEvent) {
-        if(mouseEvent.getClickCount() < 2)
-            return;
-        if(tableView.getSelectionModel().getSelectedCells().size() == 0)
-            return;
-
-        TablePosition<?,?> tablePosition = tableView.getSelectionModel().getSelectedCells().get(0);
-        int row = tablePosition.getRow();
-        int col = tablePosition.getColumn();
-        TableColumn<?,?> tableColumn = tablePosition.getTableColumn();
-        Record record = this.tableView.getItems().get(row);
-
-        if(col == 1)
-            this.numberTrack_Click(new ActionEvent());
-        if(col == 2 || col == 3)
-            this.identityTrack_click(new ActionEvent());
     }
 
     //endregion
 
     //region Accesseurs
 
-    public Stage getStage() {
-        return stage;
-    }
-
-    public void setStage(Stage stage) {
+    public void setStage (Stage stage){
         this.stage = stage;
     }
 

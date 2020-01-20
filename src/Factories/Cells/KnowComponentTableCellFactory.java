@@ -2,13 +2,18 @@ package Factories.Cells;
 
 import com.Vickx.Biblix.Images.ImageUtils;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.control.TableCell;
+import javafx.scene.control.TreeTableCell;
+import javafx.scene.control.TreeTableColumn;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.Callback;
+import model.Record;
+import sun.plugin2.jvm.RemoteJVMLauncher;
 
 import java.util.ArrayList;
 
-public class KnowComponentTableCellFactory<T> extends TableCell<T,String> {
+
+public final class KnowComponentTableCellFactory extends TreeTableCell<Record, String> {
 
     @Override
     protected void updateItem(String value, boolean empty){
@@ -64,8 +69,12 @@ public class KnowComponentTableCellFactory<T> extends TableCell<T,String> {
                 image = ImageUtils.appendRightBufferedImage(SwingFXUtils.fromFXImage(image.getImage(), null), SwingFXUtils.fromFXImage(images.get(i), null));
 
         }
-
+        this.setStyle("-fx-alignment: BASELINE_CENTER;");
         setGraphic(image);
+    }
+
+    public static Callback<TreeTableColumn<Record,String>,TreeTableCell<Record,String>> forTreeTableColumn(){
+        return (TreeTableColumn<Record,String> p)-> new KnowComponentTableCellFactory();
     }
 
 }

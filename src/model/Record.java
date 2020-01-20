@@ -42,17 +42,25 @@ public class Record {
         return identity;
     }
 
+    public String getName(){ return this.identity.getName(); }
+
     public StringProperty getNameProperty(){
         return new SimpleStringProperty(this.identity.getName().toUpperCase());
     }
+
+    public String getFirstName(){return this.identity.getFirstName();}
 
     public StringProperty getFirstNameProperty(){
         return new SimpleStringProperty(this.identity.getFirstName());
     }
 
+    public DateTime getDateDeNaissance(){ return this.identity.getDateDeNaissance(); }
+
     public StringProperty getDateDeNaissanceProperty(){
         return new SimpleStringProperty(Helper.AddZerro(this.identity.getDateDeNaissance().getDay()) + "." + Helper.AddZerro(this.identity.getDateDeNaissance().getMonth()) + "." + this.identity.getDateDeNaissance().getYear());
     }
+
+    public String getKnownFor(){ return this.identity.getKnownFor();}
 
     public StringProperty getKnownForProperty(){
         return new SimpleStringProperty( this.identity.getKnownFor());
@@ -62,12 +70,10 @@ public class Record {
         return new SimpleStringProperty(this.phoneNumber.toString());
     }
 
+    public Integer getLastOccurence(){ return this.lastOccurence; }
+
     public StringProperty getLastOccurenceProperty(){
         return new SimpleStringProperty(String.valueOf(this.lastOccurence));
-    }
-
-    public Integer getLastOccurence() {
-        return lastOccurence;
     }
 
     public void setLastOccurence(int lastOccurence) {
@@ -82,7 +88,7 @@ public class Record {
         selected.set(value);
     }
 
-    public final BooleanProperty selectedProperty() {
+    public final BooleanProperty getSelectedProperty() {
         return selected;
     }
 
@@ -116,7 +122,7 @@ public class Record {
 class SortByNumbers implements Comparator<Record> {
 
     public int compare(Record a, Record b){
-        Comparator<Record> comparator = Comparator.comparing(Record::getPhoneNumber).thenComparing(Record::getIdentity);
+        Comparator<Record> comparator = Comparator.comparing(Record::getPhoneNumber).thenComparing(Comparator.comparing(Record::getLastOccurence).reversed());
         return comparator.compare(a,b);
 
     }

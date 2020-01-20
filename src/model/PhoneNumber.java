@@ -22,7 +22,13 @@ public class PhoneNumber implements Comparable<PhoneNumber>{
         return new PhoneNumber(PhoneNumber.parse(string));
     }
 
+    /**
+     *
+     * @param phoneNumbers The list of phone numbers to search
+     * @return The result of the query
+     */
     public static RecordCollection getIdentities(ArrayList<String> phoneNumbers) {
+
         RecordCollection records = new RecordCollection();
 
         DataBase db = VFactory.getDbo();
@@ -33,7 +39,7 @@ public class PhoneNumber implements Comparable<PhoneNumber>{
 
         ArrayList<Register> registers = Register.getRegisters();
 
-        if(registers == null)
+        if(registers.size() == 0)
             return new RecordCollection();
 
         for(String number : phoneNumbers)
@@ -72,20 +78,13 @@ public class PhoneNumber implements Comparable<PhoneNumber>{
         return records;
     }
 
+
     public static RecordCollection getIdentities(PhoneNumber number){
         ArrayList<String> phoneNumbers = new ArrayList<>();
         phoneNumbers.add(number.toString());
         return getIdentities(phoneNumbers);
     }
 
-    @Override
-    public String toString(){
-        return this.phoneNumber;
-    }
-
-    public int compareTo(PhoneNumber phoneNumber){
-        return this.phoneNumber.compareTo(phoneNumber.toString());
-    }
 
     public static String parse(String string){
 
@@ -100,6 +99,17 @@ public class PhoneNumber implements Comparable<PhoneNumber>{
                 return string;
         }
 
+    }
+
+
+
+    @Override
+    public String toString(){
+        return this.phoneNumber;
+    }
+
+    public int compareTo(PhoneNumber phoneNumber){
+        return this.phoneNumber.compareTo(phoneNumber.toString());
     }
 
     @Override
