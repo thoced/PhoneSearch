@@ -4,21 +4,17 @@ import Factories.Cells.*;
 import Factories.VFactory;
 import com.Vickx.Biblix.Date.DateTime;
 import com.Vickx.Biblix.Helper;
-import javafx.beans.Observable;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -30,7 +26,6 @@ import javafx.stage.StageStyle;
 import model.*;
 import model.Exporters.ConvocationExporter;
 import model.Exporters.NumberSearchFormExcelExporter;
-import org.apache.poi.hssf.record.PageBreakRecord;
 import org.apache.poi.ss.usermodel.Workbook;
 import view.ExportersForms.ExcelExportFormForNumberSearch.ExcelExportFormForNumberSearchController;
 import view.ExportersForms.WordExportForm.WordExportFormController;
@@ -38,6 +33,7 @@ import view.TrackingForms.IdentityrTrackForm.IdentityTrackFormController;
 import view.TrackingForms.NumberTrackForm.NumberTrackFormController;
 
 import javax.swing.filechooser.FileSystemView;
+import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -46,36 +42,6 @@ import java.util.*;
 public class NumberSearchFormController {
 
     //region FXML binds
-
-    //region TableView
-
-    /*
-    @FXML
-    TableView<Record> tableView;
-
-    @FXML
-    TableColumn<Record,Boolean> tableColumnChecked;
-
-    @FXML
-    TableColumn<Record, String> tableColumnNumber;
-
-    @FXML
-    TableColumn<Record, String> tableColumnName;
-
-    @FXML
-    TableColumn<Record, String> tableColumnFirsName;
-
-    @FXML
-    TableColumn<Record, String> tableColumnDateDeNaissance;
-
-    @FXML
-    TableColumn<Record, String> tableColumnKnown;
-
-    @FXML
-    TableColumn<Record, String> tableColumnLastOccurence;
-    */
-
-    //endregion
 
     //region TreeTableView
 
@@ -541,7 +507,7 @@ public class NumberSearchFormController {
 
         RecordCollection selectedRecords = new RecordCollection();
 
-        //Stoque les objets sélectionnés dans une liste
+        //region Stoque les objets sélectionnés dans une liste
 
         for(TreeItem<Record> item: this.treeTableView.getRoot().getChildren()){
 
@@ -638,7 +604,11 @@ public class NumberSearchFormController {
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             workbook.write(fileOutputStream);
             fileOutputStream.close();
-            System.out.println("File " + fileName + " written correctly");
+            System.out.println("File \"" + fileName + "\" written correctly");
+            if(settings!=null && settings.getOpenAppOnExport()) {
+                Desktop desktop = Desktop.getDesktop();
+                desktop.open(file);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
